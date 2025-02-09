@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beautiful Things Animation</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            font-size: 60px;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .letter {
+            transition: all 1s ease-in-out;
+            display: inline-block;
+        }
+
+        .heart {
+            font-size: 60px;
+            transition: opacity 1s ease-in-out;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+        }
+
+        .image {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 75%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .lyrics {
+            opacity: 0;
+            font-size: 24px;
+            margin-top: 20px;
+            width: 80%;
+            animation: fadeIn 2s forwards 3s;
+        }
+
+        .squash {
+            animation: squashEffect 1s forwards;
+        }
+
+        .move-left {
+            transform: translateX(-120px);
+        }
+
+        .move-right {
+            transform: translateX(120px);
+        }
+
+        .visible {
+            opacity: 1;
+        }
+
+        @keyframes squashEffect {
+            0% {
+                transform: scaleY(1);
+            }
+            50% {
+                transform: scaleY(0.2) scaleX(1.2);
+            }
+            100% {
+                transform: scaleY(0.05) scaleX(1.5);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="letter lttr--I">I</span>
+        <span class="letter lttr--L">L</span>
+        <span class="letter lttr--O">O</span>
+        <span class="letter lttr--V">V</span>
+        <span class="letter lttr--E">E</span>
+        <span class="letter lttr--U">U</span>
+        <span class="heart">❤️</span>
+    </div>
+
+    <img class="image" id="loveImage" src="mozão/mozão.jpg" alt="Love Image">
+
+    <audio id="music" src="mozão/jao.mp3"></audio>
+
+    <button id="playMusic" style="margin-top: 20px; padding: 10px 20px; font-size: 18px;">
+        🔊 Tocar música
+    </button>
+
+    <div class="lyrics">
+        <p>Você me ama e eu te amo...</p>
+        <p>Alinhamento Milenar</p>
+        <p>Você não acha?...</p>
+    </div>
+
+    <script>
+        function startMusic() {
+            let music = document.getElementById("music");
+            music.currentTime = 139.8;
+            music.volume = 0.1; // Começa com volume baixo
+            music.play();
+
+            // Aumenta o volume gradualmente
+            let volumeUpInterval = setInterval(() => {
+                if (music.volume < 1.0) {
+                    music.volume = Math.min(music.volume + 0.1, 1.0); // Aumenta de 0.1 em 0.1
+                } else {
+                    clearInterval(volumeUpInterval); // Para quando atingir 100%
+                }
+            }, 800); // A cada 800ms
+
+            setTimeout(() => {
+                // Diminui o volume gradualmente antes de parar
+                let volumeDownInterval = setInterval(() => {
+                    if (music.volume > 0.1) {
+                        music.volume = Math.max(music.volume - 0.1, 0); // Diminui de 0.1 em 0.1
+                    } else {
+                        clearInterval(volumeDownInterval);
+                        music.pause();
+                    }
+                }, 800); // A cada 800ms
+            }, 12000); // Começa a diminuir o volume após 12 segundos (tempo total da música)
+        }
+
+        function animate() {
+            // Esmagando "LOVE"
+            document.querySelector(".lttr--L").classList.add("squash");
+            document.querySelector(".lttr--O").classList.add("squash");
+            document.querySelector(".lttr--V").classList.add("squash");
+            document.querySelector(".lttr--E").classList.add("squash");
+
+            // Movendo "I" e "U" para os lados
+            document.querySelector(".lttr--I").classList.add("move-left");
+            document.querySelector(".lttr--U").classList.add("move-right");
+
+            // Mostrando o coração depois que LOVE for esmagado
+            setTimeout(() => {
+                document.querySelector(".heart").classList.add("visible");
+
+                // Sumindo o coração e mostrando a imagem
+                setTimeout(() => {
+                    document.querySelector(".heart").classList.remove("visible");
+                    document.getElementById("loveImage").classList.add("visible");
+                    document.querySelector(".lyrics").style.opacity = "1";
+                }, 2000);
+            }, 1000);
+        }
+
+        // Espera interação do usuário para tocar a música e iniciar as animações
+        document.getElementById("playMusic").addEventListener("click", () => {
+            startMusic();
+            document.getElementById("playMusic").style.display = "none"; // Esconde o botão após tocar
+            animate(); // Inicia as animações após o clique
+        });
+    </script>
+</body>
+</html>
